@@ -1,0 +1,115 @@
+TizenBrew Installer – index.js change log
+
+Here is a change log you can include in your fork's GitHub commit history or README.
+Changes made to index.js
+
+Area
+	
+
+Change
+Frontend serving
+Corrected the frontend path so the service can locate client/ui/dist/index.html.
+
+Static files
+	
+
+Updated Express static-file serving for the desktop installer.
+Desktop compatibility
+	
+Added handling for packaged and unpackaged execution paths.
+
+Web server
+Retained port 8091 for the installer web interface.
+
+WebSocket
+Kept WebSocket server attached to the Express HTTP server.
+
+SDB connection
+Reviewed ADB/SDB connection handling and connection error reporting.
+
+TV connection
+Retained manual TV IP connection through Events.ConnectToTV.
+
+Connection state
+Improved handling of connection and disconnection state.
+1. Frontend path correction
+
+    Fixed the frontend path resolution for the desktop installer.
+    Ensured the service can locate ui/dist/index.html when running from the compiled dist directory.
+    Addressed the ENOENT error:
+    text
+
+    no such file or directory:
+    client/services/ui/dist/index.html
+    Addressed the browser error:
+    text
+    Cannot GET /ui/dist/index.html
+
+2. Build system compatibility
+Updated the build process to:
+
+    Compile index.js separately using Babel.
+    Compile all eight utility files into transpiled/utils/.
+    Preserve the directory structure required by relative imports.
+    Bundle the compiled service using @vercel/ncc.
+
+This resolved the missing ./utils/configuration.js error.
+3. SDB connection investigation
+
+Reviewed the following areas:
+
+    createAdbConnection(ip)
+    Connection to port 26101.
+    WebSocket Events.ConnectToTV.
+    SDB connection timeout handling.
+    ECONNREFUSED, ECONNRESET and connection-closed errors.
+    TV IP address handling.
+
+Important: We investigated the SDB connection issue, but did not establish a verified fix to the underlying adbhost protocol implementation. The library's packet handler does not implement ADB authentication (AUTH), which may be relevant to compatibility.
+4. Features retained
+
+The existing functionality was preserved:
+
+    Tizen 3 installation support.
+    Tizen 7+ certificate creation and package resigning.
+    GitHub release installation.
+    Local .wgt and .tpk installation.
+    TV directory browsing.
+    WebSocket communication.
+    Certificate configuration management.
+    Device profile transfer.
+
+Suggested Git commit
+Writing
+
+fix: improve desktop installer paths and build compatibility
+
+    Fix frontend static file resolution for desktop execution.
+    Fix frontend index.html serving from compiled distribution.
+    Preserve utility directory structure during Babel compilation.
+    Bundle the service using @vercel/ncc.
+    Investigate SDB connection handling and TV connectivity.
+    Preserve existing Tizen installation and certificate functionality.
+
+Tested on Arch Linux with Node.js 24.
+Important files changed
+
+File
+	
+
+Purpose
+index.js
+Frontend path and service handling
+package.json
+Updated build script
+package-lock.json
+	
+Updated development dependencies
+
+The original upstream project is TizenBrewInstaller . Its release history also documents previous SDB connection and installation fixes. 
+GitHub
++1
+One clarification: This is a change log of the work discussed, not a verified Git diff. To produce an exact audit of every changed line, compare your current index.js against your original Git version using:
+bash
+git diff -- client/services/tizenbrew-installer-service/index.js
+That will give you the precise changes to document in your fork.
